@@ -1,0 +1,60 @@
+[project]
+name = "pitconstituents"
+version = "0.1.0"
+description = "Point-in-time S&P 500 membership from a pinned snapshot history, SEC CIKs that survive renames and ticker reuse, and validation against hand-checked events. Dependency-free; no data is bundled."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [{ name = "Michael Anderson" }]
+keywords = ["sp500", "index-membership", "point-in-time", "survivorship-bias", "backtesting", "sec", "cik", "edgar"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Office/Business :: Financial :: Investment",
+    "Typing :: Typed",
+]
+# Standard library only. Every dataset is read from its upstream at run time.
+dependencies = []
+
+[project.optional-dependencies]
+# An offline SEC ticker table, instead of fetching the SEC's own file.
+edgartools = ["edgartools>=5"]
+
+[project.urls]
+Homepage = "https://github.com/endthestart/pitconstituents"
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pitconstituents"]
+
+[tool.pytest.ini_options]
+markers = ["network: reads from the live upstream (deselect with -m 'not network')"]
+addopts = "-m 'not network'"
+
+[tool.ruff]
+# Carried deliberately so the package lints identically inside a workspace and as
+# a standalone repo.
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+ignore = [
+    # dict(a=1) over {'a': 1} is used where the keys are keyword-ish; harmless.
+    "C408",
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["pitconstituents"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "PLR2004"]
+"examples/**" = ["T201"]
